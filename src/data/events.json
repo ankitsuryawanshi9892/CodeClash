@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "Codeforces Round #900",
+    "platform": "Codeforces",
+    "type": "Online",
+    "status": "Upcoming",
+    "start": "2025-08-01",
+    "description": "Div. 2 contest for Codeforces",
+    "link": "https://codeforces.com"
+  },
+  {
+    "id": 2,
+    "title": "Hack the Valley 5",
+    "platform": "Devfolio",
+    "type": "Onsite",
+    "status": "Ongoing",
+    "start": "2025-07-15",
+    "description": "AI + Web3 hackathon",
+    "link": "https://devfolio.co"
+  }
+]
+
