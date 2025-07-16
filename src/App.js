@@ -6,15 +6,15 @@ import { fetchCodeforcesContests, fetchHackerEarthEvents } from './services/even
 
 function App() {
   const [liveEvents, setLiveEvents] = useState([]);
-
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
 
   // Filter values
-  const [platform, setPlatform] = useState('');
-  const [type, setType] = useState('');
-  const [status, setStatus] = useState('');
+  const [platform, setPlatform] = useState([]);
+  const [type, setType] = useState([]);
+  const [status, setStatus] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [autoFilter, setAutoFilter] = useState(true); // Toggle for auto/manual filtering
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -43,23 +43,40 @@ function App() {
       ];
 
       setLiveEvents(mapped);
-      setEvents([...eventsData, ...mapped]);
-      setFilteredEvents([...eventsData, ...mapped]); // optional: preload
+      const allEvents = [...eventsData, ...mapped];
+      setEvents(allEvents);
+      setFilteredEvents(allEvents);
     };
 
     loadEvents();
   }, []);
 
+  // Apply filters automatically when filter states change
+  useEffect(() => {
+    if (autoFilter) {
+      applyFilters();
+    }
+  }, [platform, type, status, searchQuery, autoFilter]);
+
   const applyFilters = () => {
     const filtered = events.filter((event) => {
       return (
-        (platform === '' || event.platform === platform) &&
-        (type === '' || event.type === type) &&
-        (status === '' || event.status === status) &&
-        (searchQuery === '' || event.title.toLowerCase().includes(searchQuery.toLowerCase()))
+        (platform.length === 0 || platform.includes(event.platform)) &&
+        (type.length === 0 || type.includes(event.type)) &&
+        (status.length === 0 || status.includes(event.status)) &&
+        (searchQuery === '' || 
+          event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          event.description.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     });
     setFilteredEvents(filtered);
+  };
+
+  const toggleFilterMode = () => {
+    setAutoFilter(!autoFilter);
+    if (!autoFilter) {
+      applyFilters(); // Apply filters immediately when switching to auto mode
+    }
   };
 
   return (
@@ -74,8 +91,10 @@ function App() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         applyFilters={applyFilters}
+        autoFilter={autoFilter}
+        toggleFilterMode={toggleFilterMode}
       />
-      <Home events={filteredEvents.length > 0 ? filteredEvents : liveEvents} />
+      <Home events={filteredEvents} />
     </div>
   );
 }
